@@ -384,7 +384,7 @@ export interface ActionListApiResponse {
    * data, especially for cases (in the future) where we might support actions being sent to
    * multiple agents
    */
-  data: Array<Omit<ActionDetails, 'outputs'>>;
+  data: ActionDetails[];
   statuses: ResponseActionStatus[] | undefined;
   total: number;
 }

@@ -233,6 +233,62 @@ describe('actions schemas', () => {
         });
       }).not.toThrow();
     });
+
+    // expand
+    it('should work without any `actions` within the optional `expand` key', () => {
+      expect(() => {
+        EndpointActionListRequestSchema.query.validate({
+          startDate: 'now-1d', // yesterday
+          endDate: 'now', // today
+          statuses: ['failed', 'pending', 'successful'],
+          expand: {},
+        });
+      }).not.toThrow();
+    });
+
+    it('should work with a string in `actions` list', () => {
+      expect(() => {
+        EndpointActionListRequestSchema.query.validate({
+          startDate: 'now-1d', // yesterday
+          endDate: 'now', // today
+          statuses: ['failed', 'pending', 'successful'],
+          expand: { actions: 'action-id-1' },
+        });
+      }).not.toThrow();
+    });
+
+    it('should not work with empty strings for `actions`', () => {
+      expect(() => {
+        EndpointActionListRequestSchema.query.validate({
+          startDate: 'now-1d', // yesterday
+          endDate: 'now', // today
+          statuses: ['failed', 'pending', 'successful'],
+          expand: { actions: ' ' },
+        });
+      }).toThrow();
+    });
+
+    it('should not work with empty strings in `actions` list', () => {
+      expect(() => {
+        EndpointActionListRequestSchema.query.validate({
+          startDate: 'now-1d', // yesterday
+          endDate: 'now', // today
+          statuses: ['failed', 'pending', 'successful'],
+          expand: { actions: ['action-id-1', '  ', 'action-id-2'] },
+        });
+      }).toThrow();
+    });
+
+    it('should work with multiple `actions` filter', () => {
+      expect(() => {
+        EndpointActionListRequestSchema.query.validate({
+          startDate: 'now-1d', // yesterday
+          endDate: 'now', // today
+          statuses: ['failed', 'pending', 'successful'],
+          expand: { actions: ['action-id-1', 'action-id-2'] },
+        });
+      }).not.toThrow();
+    });
   });
 
   describe('NoParametersRequestSchema', () => {

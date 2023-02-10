@@ -56,6 +56,7 @@ export const actionListHandler = (
         userIds,
         commands,
         statuses,
+        expand,
       },
     } = req;
     const esClient = (await context.core).elasticsearch.client.asInternalUser;
@@ -74,6 +75,9 @@ export const actionListHandler = (
       const requestParams = {
         commands: formatCommandValues(commands),
         esClient,
+        expand: {
+          actions: formatStringIds(expand?.actions),
+        },
         elasticAgentIds: formatStringIds(elasticAgentIds),
         metadataService: endpointContext.service.getEndpointMetadataService(),
         page,

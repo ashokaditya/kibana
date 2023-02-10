@@ -25,7 +25,11 @@ import {
 import type { EndpointMetadataService } from '../metadata';
 import { ACTIONS_SEARCH_PAGE_SIZE } from './constants';
 
+interface Expand {
+  actions?: string[];
+}
 interface OptionalFilterParams {
+  expand?: Expand;
   commands?: string[];
   elasticAgentIds?: string[];
   endDate?: string;
@@ -47,6 +51,7 @@ export const getActionListByStatus = async ({
   elasticAgentIds,
   esClient,
   endDate,
+  expand,
   logger,
   metadataService,
   page: _page,
@@ -69,6 +74,7 @@ export const getActionListByStatus = async ({
     elasticAgentIds,
     esClient,
     endDate,
+    expand,
     from: 0,
     logger,
     metadataService,
@@ -106,6 +112,7 @@ export const getActionList = async ({
   elasticAgentIds,
   esClient,
   endDate,
+  expand,
   logger,
   metadataService,
   page: _page,
@@ -128,6 +135,7 @@ export const getActionList = async ({
     elasticAgentIds,
     esClient,
     endDate,
+    expand,
     from,
     logger,
     metadataService,
@@ -162,6 +170,7 @@ const getActionDetailsList = async ({
   elasticAgentIds,
   esClient,
   endDate,
+  expand,
   from,
   logger,
   metadataService,
@@ -260,10 +269,8 @@ const getActionDetailsList = async ({
     );
 
     // find the specific response's details using that set of matching responses
-    const { isCompleted, completedAt, wasSuccessful, errors, agentState } = getActionCompletionInfo(
-      action.agents,
-      matchedResponses
-    );
+    const { isCompleted, completedAt, wasSuccessful, errors, agentState, outputs } =
+      getActionCompletionInfo(action.agents, matchedResponses);
 
     const { isExpired, status } = getActionStatus({
       expirationDate: action.expiration,
@@ -271,9 +278,6 @@ const getActionDetailsList = async ({
       wasSuccessful,
     });
 
-    // NOTE: `outputs` is not returned in this service because including it on a list of data
-    // could result in a very large response unnecessarily. In the future, we might include
-    // an option to optionally include it.
     const actionRecord: ActionListApiResponse['data'][number] = {
       id: action.id,
       agents: action.agents,
@@ -290,6 +294,8 @@ const getActionDetailsList = async ({
       agentState,
       isExpired,
       status,
+      // show outputs only if action is completed and matches requested action ids
+      outputs: isCompleted && expand && expand.actions?.includes(action.id) ? outputs : undefined,
       createdBy: action.createdBy,
       comment: action.comment,
       parameters: action.parameters,

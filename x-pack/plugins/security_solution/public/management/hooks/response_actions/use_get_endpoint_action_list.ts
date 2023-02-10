@@ -18,6 +18,21 @@ interface ErrorType {
   message: string;
 }
 
+export const formatExpandValues = (_expand?: { [k: string]: string | string[] | undefined }) => {
+  if (!_expand) return;
+  const entries = Object.entries(_expand);
+  const expand = entries.reduce<{ [k: string]: string[] | undefined }>((acc, entry) => {
+    if (typeof entry[1] === 'string') {
+      acc[entry[0]] = [entry[1]];
+    } else if (Array.isArray(entry[1]) || typeof entry[1] === 'undefined') {
+      acc[entry[0]] = entry[1];
+    }
+    return acc;
+  }, {});
+
+  return expand;
+};
+
 export const useGetEndpointActionList = (
   query: EndpointActionListRequestQuery,
   options: UseQueryOptions<ActionListApiResponse, IHttpFetchError<ErrorType>> = {}
@@ -38,6 +53,7 @@ export const useGetEndpointActionList = (
     queryFn: async () => {
       return http.get<ActionListApiResponse>(BASE_ENDPOINT_ACTION_ROUTE, {
         query: {
+          expand: JSON.stringify(formatExpandValues(query.expand)),
           agentIds: query.agentIds,
           commands: query.commands,
           endDate: query.endDate,

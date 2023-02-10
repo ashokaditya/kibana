@@ -7,7 +7,7 @@
 
 import type { AppContextTestRender, ReactQueryHookRenderer } from '../../../common/mock/endpoint';
 import { createAppRootMockRenderer } from '../../../common/mock/endpoint';
-import { useGetEndpointActionList } from './use_get_endpoint_action_list';
+import { useGetEndpointActionList, formatExpandValues } from './use_get_endpoint_action_list';
 import { BASE_ENDPOINT_ACTION_ROUTE } from '../../../../common/endpoint/constants';
 import { useQuery as _useQuery } from '@tanstack/react-query';
 import { responseActionsHttpMocks } from '../../mocks/response_actions_http_mocks';
@@ -69,6 +69,72 @@ describe('useGetEndpointActionList hook', () => {
     });
   });
 
+  it('should call the proper API with `expand` and a single action id', async () => {
+    await renderReactQueryHook(() =>
+      useGetEndpointActionList({
+        agentIds: ['123', '456'],
+        userIds: ['elastic', 'citsale'],
+        commands: ['isolate', 'unisolate'],
+        statuses: ['pending', 'successful'],
+        page: 2,
+        pageSize: 20,
+        startDate: 'now-5d',
+        endDate: 'now',
+        expand: {
+          actions: 'action-id-0',
+        },
+      })
+    );
+
+    expect(apiMocks.responseProvider.actionList).toHaveBeenCalledWith({
+      path: BASE_ENDPOINT_ACTION_ROUTE,
+      query: {
+        agentIds: ['123', '456'],
+        commands: ['isolate', 'unisolate'],
+        statuses: ['pending', 'successful'],
+        endDate: 'now',
+        page: 2,
+        pageSize: 20,
+        startDate: 'now-5d',
+        userIds: ['*elastic*', '*citsale*'],
+        expand: '{"actions":["action-id-0"]}',
+      },
+    });
+  });
+
+  it('should call the proper API with `expand` and a multiple action ids', async () => {
+    await renderReactQueryHook(() =>
+      useGetEndpointActionList({
+        agentIds: ['123', '456'],
+        userIds: ['elastic', 'citsale'],
+        commands: ['isolate', 'unisolate'],
+        statuses: ['pending', 'successful'],
+        page: 2,
+        pageSize: 20,
+        startDate: 'now-5d',
+        endDate: 'now',
+        expand: {
+          actions: ['action-id-1', 'action-id-2'],
+        },
+      })
+    );
+
+    expect(apiMocks.responseProvider.actionList).toHaveBeenCalledWith({
+      path: BASE_ENDPOINT_ACTION_ROUTE,
+      query: {
+        agentIds: ['123', '456'],
+        commands: ['isolate', 'unisolate'],
+        statuses: ['pending', 'successful'],
+        endDate: 'now',
+        page: 2,
+        pageSize: 20,
+        startDate: 'now-5d',
+        userIds: ['*elastic*', '*citsale*'],
+        expand: '{"actions":["action-id-1","action-id-2"]}',
+      },
+    });
+  });
+
   it('should allow custom options to be used', async () => {
     await renderReactQueryHook(
       () =>
@@ -88,5 +154,19 @@ describe('useGetEndpointActionList hook', () => {
         enabled: false,
       })
     );
+  });
+});
+
+describe('#formatExpandValues', () => {
+  it('should format a single string to string array', () => {
+    expect(formatExpandValues({ list: '123' })).toEqual({ list: ['123'] });
+  });
+
+  it('should not format a string array', () => {
+    expect(formatExpandValues({ list: ['123', '456'] })).toEqual({ list: ['123', '456'] });
+  });
+
+  it('should not format `undefined`', () => {
+    expect(formatExpandValues({ list: undefined })).toEqual({ list: undefined });
   });
 });
