@@ -6,7 +6,7 @@
  */
 
 import { FtrProviderContext } from '../../../../../common/ftr_provider_context';
-import { getUrlPrefix, getTestRuleData, ObjectRemover } from '../../../../../common/lib';
+import { getTestRuleData, getUrlPrefix, ObjectRemover } from '../../../../../common/lib';
 
 // eslint-disable-next-line import/no-default-export
 export default function createWithCircuitBreakerTests({ getService }: FtrProviderContext) {

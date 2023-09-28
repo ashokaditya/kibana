@@ -7,42 +7,42 @@
 
 import type {
   HostDetailsStrategyResponse,
+  HostsKpiHostsStrategyResponse,
+  HostsKpiQueries,
+  HostsKpiUniqueIpsStrategyResponse,
   HostsOverviewStrategyResponse,
   HostsQueries,
   HostsStrategyResponse,
   HostsUncommonProcessesStrategyResponse,
-  HostsKpiQueries,
-  HostsKpiHostsStrategyResponse,
-  HostsKpiUniqueIpsStrategyResponse,
 } from './hosts';
 import type {
-  NetworkQueries,
   NetworkDetailsStrategyResponse,
   NetworkDnsStrategyResponse,
-  NetworkTlsStrategyResponse,
   NetworkHttpStrategyResponse,
-  NetworkOverviewStrategyResponse,
-  NetworkTopCountriesStrategyResponse,
-  NetworkTopNFlowStrategyResponse,
-  NetworkUsersStrategyResponse,
-  NetworkKpiQueries,
   NetworkKpiDnsStrategyResponse,
   NetworkKpiNetworkEventsStrategyResponse,
+  NetworkKpiQueries,
   NetworkKpiTlsHandshakesStrategyResponse,
   NetworkKpiUniqueFlowsStrategyResponse,
   NetworkKpiUniquePrivateIpsStrategyResponse,
+  NetworkOverviewStrategyResponse,
+  NetworkQueries,
+  NetworkTlsStrategyResponse,
+  NetworkTopCountriesStrategyResponse,
+  NetworkTopNFlowStrategyResponse,
+  NetworkUsersStrategyResponse,
 } from './network';
 import type { MatrixHistogramQuery, MatrixHistogramStrategyResponse } from './matrix_histogram';
 import type {
+  CtiDataSourceStrategyResponse,
   CtiEventEnrichmentStrategyResponse,
   CtiQueries,
-  CtiDataSourceStrategyResponse,
 } from './cti';
 
 import type {
-  RiskQueries,
-  KpiRiskScoreStrategyResponse,
   HostsRiskScoreStrategyResponse,
+  KpiRiskScoreStrategyResponse,
+  RiskQueries,
   UsersRiskScoreStrategyResponse,
 } from './risk_score';
 import type { UsersQueries } from './users';
