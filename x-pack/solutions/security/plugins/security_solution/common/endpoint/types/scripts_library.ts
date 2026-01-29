@@ -61,3 +61,17 @@ export type SortableScriptLibraryFields = keyof Pick<
 >;
 
 export type SortDirection = EndpointScriptListApiResponse['sortDirection'];
+
+export type EditableScriptFields = Partial<
+  Pick<
+    EndpointScript,
+    | 'name'
+    | 'platform'
+    | 'tags'
+    | 'description'
+    | 'instructions'
+    | 'example'
+    | 'pathToExecutable'
+    | 'requiresInput'
+  >
+>;
