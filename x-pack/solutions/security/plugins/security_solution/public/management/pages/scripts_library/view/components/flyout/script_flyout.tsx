@@ -46,7 +46,7 @@ const createFormState = (
       platform: [],
     } as const),
 });
-interface EndpointScriptFlyoutProps {
+export interface EndpointScriptFlyoutProps {
   onCloseFlyout: () => void;
   onClickAction: UseScriptActionItemsProps['onClickAction'];
   onSuccess: () => void;
@@ -183,7 +183,16 @@ export const EndpointScriptFlyout = memo<EndpointScriptFlyoutProps>(
           });
         }
       }
-    }, [fetchScriptError, isViewingOrEditing, queryParams, isMounted, setUrlParams, show, toasts]);
+    }, [
+      fetchScriptError,
+      isViewingOrEditing,
+      queryParams,
+      isMounted,
+      setUrlParams,
+      show,
+      toasts.addWarning,
+      toasts,
+    ]);
 
     return (
       <EuiFlyout
