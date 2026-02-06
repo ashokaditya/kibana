@@ -5,8 +5,8 @@
  * 2.0.
  */
 
-import type React from 'react';
-import { act, fireEvent } from '@testing-library/react';
+import React from 'react';
+import { act, fireEvent, waitFor } from '@testing-library/react';
 
 import {
   createAppRootMockRenderer,
@@ -49,17 +49,7 @@ describe('ScriptsLibrary', () => {
     refetch: jest.fn(),
   };
 
-  beforeAll(() => {
-    jest.useFakeTimers();
-  });
-
-  afterAll(() => {
-    jest.useRealTimers();
-  });
-
   beforeEach(() => {
-    // // Workaround for timeout via https://github.com/testing-library/user-event/issues/833#issuecomment-1171452841
-    // userEve = userEvent.setup({ advanceTimers: jest.advanceTimersByTime, pointerEventsCheck: 0 });
     scriptsGenerator = new EndpointScriptsGenerator('scripts-library-tests');
     useUserPrivilegesMock.mockReturnValue({
       endpointPrivileges: getEndpointAuthzInitialStateMock(),
@@ -72,10 +62,6 @@ describe('ScriptsLibrary', () => {
     });
 
     (useGetEndpointScriptsListMock as jest.Mock).mockReturnValue(defaultMockGetScriptsResponse);
-    (useDeleteEndpointScriptMock as jest.Mock).mockReturnValue({
-      mutateAsync: jest.fn().mockResolvedValue({}),
-      isLoading: false,
-    });
 
     render = () => {
       renderResult = mockedContext.render(<ScriptsLibrary data-test-subj="test" />);
@@ -193,11 +179,13 @@ describe('ScriptsLibrary', () => {
       });
 
       act(() => history.push(SCRIPTS_LIBRARY_PATH));
-
       render();
-      expect(useToastsMock().addDanger).toHaveBeenCalledWith(
-        'There was an error fetching the scripts list: fetch failed!'
-      );
+
+      await waitFor(() => {
+        expect(useToastsMock().addDanger).toHaveBeenCalledWith(
+          'There was an error fetching the scripts list: fetch failed!'
+        );
+      });
     });
 
     it('should show details flyout when clicked on row action item', async () => {
@@ -214,9 +202,10 @@ describe('ScriptsLibrary', () => {
       const firstScriptId = scriptsList[0].id;
       const actionsButton = getByTestId(`test-table-row-actions-${firstScriptId}`);
       expect(actionsButton).toBeInTheDocument();
-      await fireEvent.click(actionsButton);
-      const actionPanel = getByTestId(`test-table-row-actions-${firstScriptId}-panel`);
-      expect(actionPanel).toBeInTheDocument();
+      fireEvent.click(actionsButton);
+      await waitFor(() => {
+        expect(getByTestId(`test-table-row-actions-${firstScriptId}-panel`)).toBeInTheDocument();
+      });
 
       const detailsButton = getByTestId('actionDetails');
       expect(detailsButton).toBeInTheDocument();

@@ -242,7 +242,7 @@ export const ScriptsLibrary = memo<ScriptsLibraryProps>(({ 'data-test-subj': dat
           scriptId={selectedItemForDelete.id}
           onSuccess={onDeleteModalSuccess}
           onCancel={onDeleteModalCancel}
-          data-test-subj={getTestId('deleteModal')}
+          data-test-subj={getTestId('delete-modal')}
         />
       )}
       {isFetched && (
