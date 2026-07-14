@@ -327,7 +327,7 @@ export const SecuritySideNav: React.FC = () => {
     enableAlertsAndAttacksAlignment,
     isNewEAHomePageEnabled,
     chatExperience,
-    isAgentBuilderNavAtTop
+    isAgentBuilderNavAtTop,
   ]);
 
   if (!items) {
