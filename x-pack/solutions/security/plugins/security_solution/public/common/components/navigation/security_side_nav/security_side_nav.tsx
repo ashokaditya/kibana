@@ -22,7 +22,7 @@ import {
 } from '@kbn/security-solution-side-nav';
 import useObservable from 'react-use/lib/useObservable';
 import { AI_CHAT_EXPERIENCE_TYPE } from '@kbn/management-settings-ids';
-import { ENABLE_ALERTS_AND_ATTACKS_ALIGNMENT_SETTING } from '../../../../../common/constants';
+import { useIsAlertsAndAttacksAlignmentEnabled } from '../../../hooks/use_is_alerts_and_attacks_alignment_enabled';
 import { useRouteSpy } from '../../../utils/route/use_route_spy';
 import { type GetSecuritySolutionLinkProps, useGetSecuritySolutionLinkProps } from '../../links';
 import { useNavLinks } from '../../../links/nav_links';
@@ -301,7 +301,6 @@ const usePanelBottomOffset = (): string | undefined => {
  */
 export const SecuritySideNav: React.FC = () => {
   const {
-    uiSettings,
     settings: { client },
     featureFlags: { getBooleanValue },
   } = useKibana().services;
@@ -310,6 +309,7 @@ export const SecuritySideNav: React.FC = () => {
   const isNewEAHomePageEnabled = useIsExperimentalFeatureEnabled(
     'entityAnalyticsNewHomePageEnabled'
   );
+  const enableAlertsAndAttacksAlignment = useIsAlertsAndAttacksAlignmentEnabled();
   const isAgentBuilderNavAtTop = getBooleanValue(AGENT_BUILDER_NAV_AT_TOP_FLAG, false);
   const items = useSolutionSideNavItems(chatExperience);
   const selectedId = useSelectedId();
@@ -317,17 +317,18 @@ export const SecuritySideNav: React.FC = () => {
   const panelBottomOffset = usePanelBottomOffset();
 
   const categories = useMemo(() => {
-    const enableAlertsAndAttacksAlignment = uiSettings.get(
-      ENABLE_ALERTS_AND_ATTACKS_ALIGNMENT_SETTING,
-      false
-    );
     return getNavCategories(
       chatExperience,
       enableAlertsAndAttacksAlignment,
       isNewEAHomePageEnabled,
       isAgentBuilderNavAtTop
     );
-  }, [uiSettings, isNewEAHomePageEnabled, chatExperience, isAgentBuilderNavAtTop]);
+  }, [
+    enableAlertsAndAttacksAlignment,
+    isNewEAHomePageEnabled,
+    chatExperience,
+    isAgentBuilderNavAtTop
+  ]);
 
   if (!items) {
     return <EuiLoadingSpinner size="m" data-test-subj="sideNavLoader" />;
